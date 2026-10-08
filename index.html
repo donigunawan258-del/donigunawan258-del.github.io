@@ -190,6 +190,54 @@ section{padding:80px 20px}
     <p class="sub">Hubungi Gunawan langsung di WhatsApp untuk pemesanan.</p>
     <a class="btn" href="https://wa.me/6288709636700?text=Halo%20Gunawan%2C%20saya%20mau%20pesan%20jasa%20bikin%20website" target="_blank" rel="noopener">Chat +62 887-0963-6700</a>
   </div>
+  <form id="form-pesan" style="max-width:480px;margin:32px auto 0;display:grid;gap:12px;text-align:left">
+  <input id="f-nama" type="text" placeholder="Nama Anda" required
+    style="padding:12px;border-radius:8px;border:1px solid #555;background:rgba(255,255,255,.06);color:inherit;font:inherit">
+  <input id="f-kontak" type="text" placeholder="Nomor WhatsApp / email" required
+    style="padding:12px;border-radius:8px;border:1px solid #555;background:rgba(255,255,255,.06);color:inherit;font:inherit">
+  <textarea id="f-pesan" rows="4" placeholder="Ceritakan kebutuhan Anda" required
+    style="padding:12px;border-radius:8px;border:1px solid #555;background:rgba(255,255,255,.06);color:inherit;font:inherit"></textarea>
+  <button id="f-kirim" type="submit"
+    style="padding:12px;border-radius:8px;border:0;cursor:pointer;font:inherit;font-weight:600">Kirim pesanan</button>
+  <p id="f-status" style="margin:0;min-height:1.2em"></p>
+</form>
+
+<script>
+  const SUPABASE_URL = "ISI_PROJECT_URL";
+  const SUPABASE_KEY = "ISI_ANON_PUBLIC_KEY";
+
+  document.getElementById("form-pesan").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const tombol = document.getElementById("f-kirim");
+    const status = document.getElementById("f-status");
+    tombol.disabled = true;
+    status.textContent = "Mengirim...";
+
+    try {
+      const res = await fetch(SUPABASE_URL + "/rest/v1/pesanan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          nama: document.getElementById("f-nama").value,
+          kontak: document.getElementById("f-kontak").value,
+          pesan: document.getElementById("f-pesan").value
+        })
+      });
+      if (!res.ok) throw new Error(res.status);
+      status.textContent = "Terkirim! Terima kasih, kami segera menghubungi Anda.";
+      e.target.reset();
+    } catch (err) {
+      status.textContent = "Gagal mengirim. Silakan pesan lewat WhatsApp.";
+      console.error(err);
+    }
+    tombol.disabled = false;
+  });
+</script>
 </section>
 
 <footer>&copy; 2026 Gunawan. Jual Jasa Bikin Web.</footer>
